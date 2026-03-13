@@ -1,0 +1,81 @@
+.loading-animation {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 40px;
+  z-index: 9999;
+  animation: fadeInLoading 0.3s ease-out;
+}
+
+@keyframes fadeInLoading {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.logo-spinner {
+  width: 120px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo-spinner.clockwise {
+  animation: spinClockwise 1s linear forwards;
+}
+
+.logo-spinner.counter-clockwise {
+  animation: spinCounterClockwise 1s linear forwards;
+}
+
+@keyframes spinClockwise {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spinCounterClockwise {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+.spinner-logo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.progress-bar-container {
+  width: 200px;
+  height: 6px;
+  background: #e0e0e0;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #2dd46f 0%, #22a447 100%);
+  width: 0%;
+  transition: width 0.3s ease-out;
+  border-radius: 10px;
+}
