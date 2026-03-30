@@ -8,7 +8,72 @@ from docx.shared import Inches, Pt, RGBColor
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 
 
-def generate_group_export(group, members, messages):
+def get_export_translations(language='en'):
+    """
+    Get translation strings for export based on language
+    
+    Args:
+        language: 'en' for English or 'bg' for Bulgarian
+    
+    Returns:
+        Dictionary with all export-related translation strings
+    """
+    translations = {
+        'en': {
+            'group_report': 'Group Report',
+            'generated_on': 'Generated on',
+            'group_overview': 'Group Overview',
+            'group_name': 'Group Name',
+            'description': 'Description',
+            'no_description': 'No description',
+            'created_by': 'Created By',
+            'created_date': 'Created Date',
+            'total_members': 'Total Members',
+            'total_messages': 'Total Messages',
+            'members': 'Members',
+            'total_members_label': 'Total members',
+            'number': '#',
+            'name': 'Name',
+            'username': 'Username',
+            'role': 'Role',
+            'joined': 'Joined',
+            'messages': 'Messages',
+            'total_messages_label': 'Total messages',
+            'no_messages': 'No messages yet.',
+            'date_format': '%B %d, %Y',
+            'date_time_format': '%B %d, %Y at %I:%M %p',
+            'message_date_format': '%b %d, %Y %I:%M %p',
+        },
+        'bg': {
+            'group_report': 'Доклад за група',
+            'generated_on': 'Генериран на',
+            'group_overview': 'Преглед на група',
+            'group_name': 'Име на група',
+            'description': 'Описание',
+            'no_description': 'Нямаме описание',
+            'created_by': 'Създадено от',
+            'created_date': 'Дата на създаване',
+            'total_members': 'Общо членове',
+            'total_messages': 'Общо съобщения',
+            'members': 'Членове',
+            'total_members_label': 'Общо членове',
+            'number': '#',
+            'name': 'Име',
+            'username': 'Потребителско име',
+            'role': 'Роля',
+            'joined': 'Присъединен/а',
+            'messages': 'Съобщения',
+            'total_messages_label': 'Общо съобщения',
+            'no_messages': 'Все още няма съобщения.',
+            'date_format': '%d.%m.%Y',
+            'date_time_format': '%d.%m.%Y в %H:%M',
+            'message_date_format': '%d.%m.%Y %H:%M',
+        }
+    }
+    return translations.get(language, translations['en'])
+
+
+def generate_group_export(group, members, messages, language='en'):
     """
     Generate a DOCX document with group information
     
@@ -16,25 +81,27 @@ def generate_group_export(group, members, messages):
         group: Group object
         members: List of GroupMember objects with related user data
         messages: List of Message objects for the group
+        language: 'en' for English or 'bg' for Bulgarian
     
     Returns:
         Path to the generated DOCX file
     """
+    t = get_export_translations(language)
     doc = Document()
     
     # Add title
-    title = doc.add_heading(f'Group Report: {group.name}', 0)
+    title = doc.add_heading(f'{t["group_report"]}: {group.name}', 0)
     title.alignment = WD_ALIGN_PARAGRAPH.CENTER
     
     # Add generation timestamp
     timestamp = doc.add_paragraph()
-    timestamp.add_run(f'Generated on {datetime.now().strftime("%B %d, %Y at %I:%M %p")}').italic = True
+    timestamp.add_run(f'{t["generated_on"]} {datetime.now().strftime(t["date_time_format"])}').italic = True
     timestamp.alignment = WD_ALIGN_PARAGRAPH.CENTER
     
     doc.add_paragraph()  # Spacing
     
     # ===== GROUP OVERVIEW SECTION =====
-    doc.add_heading('Group Overview', 1)
+    doc.add_heading(t['group_overview'], 1)
     
     overview_table = doc.add_table(rows=6, cols=2)
     overview_table.style = 'Light Grid Accent 1'
@@ -47,12 +114,12 @@ def generate_group_export(group, members, messages):
     
     # Fill overview data
     overview_data = [
-        ('Group Name', group.name),
-        ('Description', group.description or 'No description'),
-        ('Created By', group.created_by.get_full_name() or group.created_by.username),
-        ('Created Date', group.created_at.strftime('%B %d, %Y') if group.created_at else 'N/A'),
-        ('Total Members', str(len(members))),
-        ('Total Messages', str(len(messages))),
+        (t['group_name'], group.name),
+        (t['description'], group.description or t['no_description']),
+        (t['created_by'], group.created_by.get_full_name() or group.created_by.username),
+        (t['created_date'], group.created_at.strftime(t['date_format']) if group.created_at else 'N/A'),
+        (t['total_members'], str(len(members))),
+        (t['total_messages'], str(len(messages))),
     ]
     
     for idx, (label, value) in enumerate(overview_data):
@@ -67,8 +134,8 @@ def generate_group_export(group, members, messages):
     doc.add_paragraph()  # Spacing
     
     # ===== MEMBERS SECTION =====
-    doc.add_heading('Members', 1)
-    doc.add_paragraph(f'Total members: {len(members)}')
+    doc.add_heading(t['members'], 1)
+    doc.add_paragraph(f'{t["total_members_label"]}: {len(members)}')
     
     # Create members table
     members_table = doc.add_table(rows=len(members) + 1, cols=5)
@@ -85,7 +152,7 @@ def generate_group_export(group, members, messages):
     
     # Header row
     header_cells = members_table.rows[0].cells
-    headers = ['#', 'Name', 'Username', 'Role', 'Joined']
+    headers = [t['number'], t['name'], t['username'], t['role'], t['joined']]
     for idx, header_text in enumerate(headers):
         header_cells[idx].text = header_text
         # Bold header
@@ -107,13 +174,13 @@ def generate_group_export(group, members, messages):
         row.cells[1].text = member.user.get_full_name() or member.user.username
         row.cells[2].text = member.user.username
         row.cells[3].text = member.role.replace('_', ' ').title()
-        row.cells[4].text = member.joined_at.strftime('%m/%d/%Y') if member.joined_at else 'N/A'
+        row.cells[4].text = member.joined_at.strftime(t['date_format']) if member.joined_at else 'N/A'
     
     doc.add_paragraph()  # Spacing
     
     # ===== MESSAGES SECTION =====
-    doc.add_heading('Messages', 1)
-    doc.add_paragraph(f'Total messages: {len(messages)}')
+    doc.add_heading(t['messages'], 1)
+    doc.add_paragraph(f'{t["total_messages_label"]}: {len(messages)}')
     
     if messages:
         for msg in messages:
@@ -121,13 +188,13 @@ def generate_group_export(group, members, messages):
             msg_header = doc.add_paragraph()
             msg_sender_run = msg_header.add_run(msg.sender.get_full_name() or msg.sender.username)
             msg_sender_run.bold = True
-            msg_header.add_run(f' @{msg.sender.username} • {msg.created_at.strftime("%b %d, %Y %I:%M %p")}').italic = True
+            msg_header.add_run(f' @{msg.sender.username} • {msg.created_at.strftime(t["message_date_format"])}').italic = True
             
             # Message content
             msg_content = doc.add_paragraph(msg.content, style='List Bullet')
             msg_content.paragraph_format.left_indent = Inches(0.5)
     else:
-        doc.add_paragraph('No messages yet.')
+        doc.add_paragraph(t['no_messages'])
     
     # Create export filename
     timestamp_str = datetime.now().strftime('%Y%m%d_%H%M%S')

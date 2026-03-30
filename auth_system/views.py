@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.contrib.auth import authenticate, login, logout
 from django.http import FileResponse
+from django.db import models
 from auth_system.models import CustomUser, Group, GroupMember, Message, AuditLog
 from auth_system.serializers import (
     UserLoginSerializer, UserRegisterSerializer, CustomUserSerializer,
@@ -260,7 +261,6 @@ class GroupMemberView(APIView):
             )
         
         user_id = request.data.get('user_id')
-        role = request.data.get('role', 'student')
         
         try:
             user = CustomUser.objects.get(id=user_id)
@@ -279,10 +279,31 @@ class GroupMemberView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
         
+        # Use user's actual role, not a provided one
         member, created = GroupMember.objects.get_or_create(
             group=group, user=user,
-            defaults={'role': role}
+            defaults={
+                'role': user.role,
+                'grade': user.preferred_grade if user.role == 'student' else None
+            }
         )
+        
+        # If new student member, auto-assign class_number
+        if created and user.role == 'student':
+            max_class_number = GroupMember.objects.filter(
+                group=group,
+                user__role='student',
+                class_number__isnull=False
+            ).aggregate(max_num=models.Max('class_number'))['max_num']
+            
+            next_class_number = (max_class_number or 0) + 1
+            member.class_number = next_class_number
+            member.save(update_fields=['class_number'])
+        
+        # If member already existed, update their grade and class_number
+        if not created and user.role == 'student':
+            member.grade = user.preferred_grade
+            member.save(update_fields=['grade'])
         
         serializer = GroupMemberSerializer(member)
         return Response(
@@ -678,8 +699,13 @@ class GroupExportView(APIView):
             # Get group messages
             messages = group.messages.select_related('sender').order_by('created_at')
             
+            # Get language from request (default to 'en')
+            language = request.query_params.get('language', 'en')
+            if language not in ['en', 'bg']:
+                language = 'en'
+            
             # Generate DOCX
-            filepath, filename = generate_group_export(group, members, messages)
+            filepath, filename = generate_group_export(group, members, messages, language)
             
             # Return file as response
             response = FileResponse(open(filepath, 'rb'))

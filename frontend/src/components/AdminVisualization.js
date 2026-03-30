@@ -38,7 +38,7 @@ function AdminVisualization({ onClose }) {
     };
 
     fetchGraphData();
-  }, []);
+  }, [t]);
 
   // Helper function to get hierarchical position for node based on role
   const getNodeHierarchy = (node, width, height) => {
@@ -177,7 +177,7 @@ function AdminVisualization({ onClose }) {
         .attr('class', `node-tooltip tooltip-${d.id}`)
         .attr('x', d.x || 0)
         .attr('y', (d.y || 0) - 55)
-        .text(`${d.label} (${d.role})`)
+        .text(`${d.label || 'Unknown'} (${(d.role || 'user').replace(/_/g, ' ')})`)
         .attr('text-anchor', 'middle')
         .attr('font-size', '12px')
         .attr('font-weight', 'bold')
@@ -204,7 +204,7 @@ function AdminVisualization({ onClose }) {
         .transition()
         .duration(200)
         .style('opacity', 0)
-        .remove();
+        .on('end', function() { d3.select(this).remove(); });
     });
 
     // Create labels
@@ -342,7 +342,7 @@ function AdminVisualization({ onClose }) {
         <div className={`graph-container ${activeTab === 'graph' ? 'active' : 'hidden'}`}>
           <svg ref={svgRef} className="graph-svg"></svg>
           <div className="visualization-info">
-            <p>📊 Hierarchy (Left to Right): Teachers → Moderators → Students → Groups • Drag nodes to reposition (stays fixed) • Scroll to zoom • Drag canvas to pan</p>
+            <p>📊 {t('viz_info')}</p>
           </div>
         </div>
         <div className={`table-container ${activeTab === 'table' ? 'active' : 'hidden'}`}>
@@ -374,37 +374,37 @@ function DataTable({ data }) {
     <div className="data-table-container">
       <div className="summary-sidebar">
         <div className="summary-stat">
-          <span className="summary-label">Total</span>
+          <span className="summary-label">{t('viz_summary_total_users')}</span>
           <span className="summary-value">{grouped.teachers.length + grouped.moderators.length + grouped.students.length + grouped.groups.length}</span>
         </div>
         <div className="summary-stat">
-          <span className="summary-label">Total Groups:</span>
+          <span className="summary-label">{t('viz_summary_total_groups')}:</span>
           <span className="summary-value">{grouped.groups.length}</span>
         </div>
         <div className="summary-stat">
-          <span className="summary-label">Teachers:</span>
+          <span className="summary-label">{t('viz_summary_teachers')}:</span>
           <span className="summary-value">{grouped.teachers.length}</span>
         </div>
         <div className="summary-stat">
-          <span className="summary-label">Moderators:</span>
+          <span className="summary-label">{t('viz_summary_moderators')}:</span>
           <span className="summary-value">{grouped.moderators.length}</span>
         </div>
         <div className="summary-stat">
-          <span className="summary-label">Students:</span>
+          <span className="summary-label">{t('viz_summary_students')}:</span>
           <span className="summary-value">{grouped.students.length}</span>
         </div>
       </div>
 
       <div className="table-content">
         <div className="data-section">
-          <h3 className="section-title teachers-title">[Teachers]</h3>
+          <h3 className="section-title teachers-title">[{t('viz_section_teachers')}]</h3>
           {grouped.teachers.length > 0 ? (
             <table className="data-table">
               <thead>
                 <tr>
-                  <th>Username</th>
-                  <th>Role</th>
-                  <th>Type</th>
+                  <th>{t('viz_username')}</th>
+                  <th>{t('viz_role')}</th>
+                  <th>{t('viz_type')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -418,19 +418,19 @@ function DataTable({ data }) {
               </tbody>
             </table>
           ) : (
-            <p className="empty-section">No teachers</p>
+            <p className="empty-section">{t('viz_no_teachers')}</p>
           )}
         </div>
 
         <div className="data-section">
-          <h3 className="section-title moderators-title">[Moderators]</h3>
+          <h3 className="section-title moderators-title">[{t('viz_section_moderators')}]</h3>
           {grouped.moderators.length > 0 ? (
             <table className="data-table">
               <thead>
                 <tr>
-                  <th>Username</th>
-                  <th>Role</th>
-                  <th>Type</th>
+                  <th>{t('viz_username')}</th>
+                  <th>{t('viz_role')}</th>
+                  <th>{t('viz_type')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -449,14 +449,14 @@ function DataTable({ data }) {
         </div>
 
         <div className="data-section">
-          <h3 className="section-title students-title">[{t('viz_student')}s]</h3>
+          <h3 className="section-title students-title">[{t('viz_section_students')}]</h3>
           {grouped.students.length > 0 ? (
             <table className="data-table">
               <thead>
                 <tr>
-                  <th>Username</th>
-                  <th>Role</th>
-                  <th>Type</th>
+                  <th>{t('viz_username')}</th>
+                  <th>{t('viz_role')}</th>
+                  <th>{t('viz_type')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -464,25 +464,25 @@ function DataTable({ data }) {
                   <tr key={node.id}>
                     <td>{node.label}</td>
                     <td><span className="role-badge student">{node.role}</span></td>
-                  <td>{node.type}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          <p className="empty-section">{t('viz_no_students')}</p>
-        )}
+                    <td>{node.type}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <p className="empty-section">{t('viz_no_students')}</p>
+          )}
         </div>
 
         <div className="data-section">
-          <h3 className="section-title groups-title">[Groups]</h3>
+          <h3 className="section-title groups-title">[{t('viz_section_groups')}]</h3>
           {grouped.groups.length > 0 ? (
             <table className="data-table">
               <thead>
                 <tr>
-                  <th>Group Name</th>
-                  <th>Type</th>
-                  <th>Members</th>
+                  <th>{t('viz_group_name')}</th>
+                  <th>{t('viz_type')}</th>
+                  <th>{t('viz_members')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -494,14 +494,14 @@ function DataTable({ data }) {
                   <tr key={node.id}>
                     <td>{node.label}</td>
                     <td>{node.type}</td>
-                    <td>{memberCount} members</td>
+                    <td>{memberCount} {t('viz_members')}</td>
                   </tr>
                 );
               })}
             </tbody>
           </table>
         ) : (
-          <p className="empty-section">No groups</p>
+          <p className="empty-section">{t('viz_no_groups')}</p>
         )}
       </div>
       </div>

@@ -32,10 +32,16 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         password = validated_data.pop('password')
-        grade = validated_data.pop('grade', '12A')
+        grade = validated_data.pop('grade', None)
+        role = validated_data.get('role', 'student')
+        
         user = CustomUser.objects.create_user(**validated_data)
         user.set_password(password)
-        user.preferred_grade = grade
+        
+        # Only set grade for student users
+        if role == 'student' and grade:
+            user.preferred_grade = grade
+        
         user.save()
         return user
 

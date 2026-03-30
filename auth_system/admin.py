@@ -2,7 +2,9 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
-from auth_system.models import CustomUser, Group, GroupMember, Message
+from django.urls import reverse
+from django.db.models import QuerySet
+from auth_system.models import CustomUser, Group, GroupMember, Message, AuditLog
 
 
 @admin.register(CustomUser)
@@ -13,9 +15,34 @@ class CustomUserAdmin(UserAdmin):
     readonly_fields = ['created_at', 'updated_at', 'user_stats']
     ordering = ['-created_at']
     
-    fieldsets = UserAdmin.fieldsets + (
-        ('Additional Info', {
-            'fields': ('role', 'bio', 'phone', 'created_at', 'updated_at', 'user_stats')
+    fieldsets = (
+        (None, {
+            'fields': ('username', 'password')
+        }),
+        ('Personal info', {
+            'fields': ('first_name', 'last_name', 'email')
+        }),
+        ('User Details', {
+            'fields': ('role', 'preferred_grade')
+        }),
+        ('Permissions', {
+            'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions'),
+            'classes': ('collapse',)
+        }),
+        ('Important dates', {
+            'fields': ('last_login', 'created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+        ('Statistics', {
+            'fields': ('user_stats',),
+            'classes': ('collapse',)
+        }),
+    )
+    
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide',),
+            'fields': ('username', 'password1', 'password2', 'email', 'first_name', 'last_name', 'role', 'preferred_grade', 'is_active')
         }),
     )
     
@@ -139,14 +166,34 @@ class GroupMemberAdmin(admin.ModelAdmin):
     list_display = ['member_display', 'group_display', 'role_display', 'joined_at_display']
     list_filter = ['group', 'role', 'joined_at']
     search_fields = ['user__username', 'group__name']
-    readonly_fields = ['joined_at']
     ordering = ['-joined_at']
     
-    fieldsets = (
-        ('Membership Information', {
-            'fields': ('user', 'group', 'role', 'joined_at')
-        }),
-    )
+    def get_readonly_fields(self, request, obj=None):
+        """Make role read-only only when editing existing members"""
+        if obj:  # Editing existing object
+            return ['joined_at', 'role']
+        return ['joined_at']  # Creating new object
+    
+    def get_fieldsets(self, request, obj=None):
+        """Hide role field when creating new members"""
+        fieldsets = (
+            ('Membership Information', {
+                'fields': ('user', 'group', 'joined_at')
+            }),
+        )
+        if obj:  # Editing existing object
+            fieldsets = (
+                ('Membership Information', {
+                    'fields': ('user', 'group', 'role', 'joined_at')
+                }),
+            )
+        return fieldsets
+    
+    def save_model(self, request, obj, form, change):
+        """Automatically set role based on user's actual role"""
+        if obj.user:
+            obj.role = obj.user.role
+        super().save_model(request, obj, form, change)
     
     def member_display(self, obj):
         return format_html(
@@ -239,6 +286,118 @@ class MessageAdmin(admin.ModelAdmin):
             obj.id, len(obj.content), obj.updated_at.strftime('%b %d, %Y %H:%M:%S')
         )
     message_meta.short_description = 'Message Metadata'
+
+
+@admin.register(AuditLog)
+class AuditLogAdmin(admin.ModelAdmin):
+    list_display = ['timestamp_badge', 'action_badge', 'user_display', 'description_short', 'group_display']
+    list_filter = ['action', 'timestamp', 'user']
+    search_fields = ['description', 'user__username', 'group__name']
+    readonly_fields = ['user', 'action', 'description', 'group', 'target_user', 'timestamp', 'ip_address']
+    ordering = ['-timestamp']
+    date_hierarchy = 'timestamp'
+    
+    def has_add_permission(self, request):
+        """Audit logs cannot be created manually"""
+        return False
+    
+    def has_delete_permission(self, request, obj=None):
+        """Only superusers can delete audit logs"""
+        return request.user.is_superuser
+    
+    def has_change_permission(self, request, obj=None):
+        """Audit logs cannot be edited"""
+        return False
+    
+    def timestamp_badge(self, obj):
+        """Display timestamp in a styled badge"""
+        return format_html(
+            '<span style="background-color: #e5e7eb; padding: 3px 8px; border-radius: 4px; font-size: 11px;">{}</span>',
+            obj.timestamp.strftime('%Y-%m-%d %H:%M:%S')
+        )
+    timestamp_badge.short_description = 'Timestamp'
+    
+    def action_badge(self, obj):
+        """Display action with color coding"""
+        action_colors = {
+            'login': '#10b981',
+            'logout': '#6b7280',
+            'account_create': '#3b82f6',
+            'account_delete': '#ef4444',
+            'account_update': '#f59e0b',
+            'message_send': '#8b5cf6',
+            'message_delete': '#dc2626',
+            'group_create': '#06b6d4',
+            'group_delete': '#d97706',
+            'group_update': '#f59e0b',
+            'member_join': '#14b8a6',
+            'member_leave': '#64748b',
+            'member_remove': '#e11d48',
+            'role_change': '#7c3aed',
+        }
+        color = action_colors.get(obj.action, '#6b7280')
+        return format_html(
+            '<span style="background-color: {}; color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 11px;">{}</span>',
+            color, obj.get_action_display()
+        )
+    action_badge.short_description = 'Action'
+    
+    def user_display(self, obj):
+        """Display user link"""
+        if obj.user:
+            url = reverse('admin:auth_system_customuser_change', args=[obj.user.id])
+            return format_html('<a href="{}">{}</a>', url, obj.user.username)
+        return '—'
+    user_display.short_description = 'User'
+    
+    def description_short(self, obj):
+        """Display truncated description"""
+        desc = obj.description[:60]
+        if len(obj.description) > 60:
+            desc += '...'
+        return desc
+    description_short.short_description = 'Description'
+    
+    def group_display(self, obj):
+        """Display group link if exists"""
+        if obj.group:
+            url = reverse('admin:auth_system_group_change', args=[obj.group.id])
+            return format_html('<a href="{}">{}</a>', url, obj.group.name)
+        return '—'
+    group_display.short_description = 'Group'
+    
+    actions = ['clear_old_logs', 'clear_by_action']
+    
+    def clear_old_logs(self, request, queryset: QuerySet):
+        """Action to clear logs older than 30 days"""
+        from django.utils import timezone
+        from datetime import timedelta
+        
+        cutoff = timezone.now() - timedelta(days=30)
+        count, _ = AuditLog.objects.filter(timestamp__lt=cutoff).delete()
+        
+        self.message_user(
+            request,
+            format_html(
+                '<span style="color: #10b981; font-weight: bold;">✓ Deleted {} audit log(s) older than 30 days</span>',
+                count
+            )
+        )
+    clear_old_logs.short_description = '🗑️ Clear logs older than 30 days'
+    
+    def clear_by_action(self, request, queryset: QuerySet):
+        """Action to clear selected action logs"""
+        count = queryset.count()
+        queryset.delete()
+        
+        self.message_user(
+            request,
+            format_html(
+                '<span style="color: #10b981; font-weight: bold;">✓ Deleted {} audit log(s)</span>',
+                count
+            )
+        )
+    clear_by_action.short_description = '🗑️ Delete selected logs'
 
 
 # Unregister Django's default Groups model (we use GroupMember instead)

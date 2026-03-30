@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import './RegisterPage.css';
 import { getCsrfToken } from '../utils/csrf';
+import { useLanguage } from '../LanguageContext';
 
 function RegisterPage({ onRegistrationSuccess }) {
+  const { t, language, toggleLanguage } = useLanguage();
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -18,10 +20,17 @@ function RegisterPage({ onRegistrationSuccess }) {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setFormData(prev => {
+      const updated = {
+        ...prev,
+        [name]: value
+      };
+      // Clear grade if role changes away from student
+      if (name === 'role' && value !== 'student') {
+        updated.grade = null;
+      }
+      return updated;
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -74,7 +83,7 @@ function RegisterPage({ onRegistrationSuccess }) {
           password: formData.password,
           password_confirm: formData.password_confirm,
           role: formData.role,
-          grade: formData.grade
+          ...(formData.role === 'student' && { grade: formData.grade })
         }),
       });
 
@@ -105,11 +114,16 @@ function RegisterPage({ onRegistrationSuccess }) {
 
   return (
     <div className="register-container">
+      <div className="register-header">
+        <button className="btn-language" onClick={toggleLanguage} title="Toggle language">
+          🌐 {language.toUpperCase()}
+        </button>
+      </div>
       <div className="register-card">
         <div className="register-logo">
           <img src="/logo.png" alt="Leav Logo" />
           <h1>Leav</h1>
-          <p>Create your account</p>
+          <p>{t('register_title')}</p>
         </div>
 
         {error && <div className="register-error">{error}</div>}
@@ -117,12 +131,12 @@ function RegisterPage({ onRegistrationSuccess }) {
         <form onSubmit={handleSubmit}>
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="first_name">First Name</label>
+              <label htmlFor="first_name">{t('register_first_name')}</label>
               <input
                 id="first_name"
                 type="text"
                 name="first_name"
-                placeholder="Enter your first name"
+                placeholder={t('register_first_name')}
                 value={formData.first_name}
                 onChange={handleChange}
                 disabled={loading}
@@ -130,12 +144,12 @@ function RegisterPage({ onRegistrationSuccess }) {
             </div>
 
             <div className="form-group">
-              <label htmlFor="last_name">Last Name</label>
+              <label htmlFor="last_name">{t('register_last_name')}</label>
               <input
                 id="last_name"
                 type="text"
                 name="last_name"
-                placeholder="Enter your last name"
+                placeholder={t('register_last_name')}
                 value={formData.last_name}
                 onChange={handleChange}
                 disabled={loading}
@@ -144,12 +158,12 @@ function RegisterPage({ onRegistrationSuccess }) {
           </div>
 
           <div className="form-group">
-            <label htmlFor="username">Username *</label>
+            <label htmlFor="username">{t('register_username')} *</label>
             <input
               id="username"
               type="text"
               name="username"
-              placeholder="Choose a username"
+              placeholder={t('register_username')}
               value={formData.username}
               onChange={handleChange}
               disabled={loading}
@@ -158,12 +172,12 @@ function RegisterPage({ onRegistrationSuccess }) {
           </div>
 
           <div className="form-group">
-            <label htmlFor="email">Email *</label>
+            <label htmlFor="email">{t('register_email')} *</label>
             <input
               id="email"
               type="email"
               name="email"
-              placeholder="Enter your email"
+              placeholder={t('register_email')}
               value={formData.email}
               onChange={handleChange}
               disabled={loading}
@@ -173,7 +187,7 @@ function RegisterPage({ onRegistrationSuccess }) {
 
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="role">Role</label>
+              <label htmlFor="role">{t('register_role')}</label>
               <select
                 id="role"
                 name="role"
@@ -181,14 +195,14 @@ function RegisterPage({ onRegistrationSuccess }) {
                 onChange={handleChange}
                 disabled={loading}
               >
-                <option value="student">Student</option>
-                <option value="teacher">Teacher</option>
+                <option value="student">{t('register_student')}</option>
+                <option value="teacher">{t('register_teacher')}</option>
               </select>
             </div>
 
             {formData.role === 'student' && (
               <div className="form-group">
-                <label htmlFor="grade">Grade *</label>
+                <label htmlFor="grade">{t('register_grade')} *</label>
                 <select
                   id="grade"
                   name="grade"
@@ -206,12 +220,12 @@ function RegisterPage({ onRegistrationSuccess }) {
 
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="password">Password *</label>
+              <label htmlFor="password">{t('register_password')} *</label>
               <input
                 id="password"
                 type="password"
                 name="password"
-                placeholder="Min 8 characters"
+                placeholder={t('register_password_min')}
                 value={formData.password}
                 onChange={handleChange}
                 disabled={loading}
@@ -220,12 +234,12 @@ function RegisterPage({ onRegistrationSuccess }) {
             </div>
 
             <div className="form-group">
-              <label htmlFor="password_confirm">Confirm Password *</label>
+              <label htmlFor="password_confirm">{t('register_password_confirm')} *</label>
               <input
                 id="password_confirm"
                 type="password"
                 name="password_confirm"
-                placeholder="Confirm password"
+                placeholder={t('register_password_confirm')}
                 value={formData.password_confirm}
                 onChange={handleChange}
                 disabled={loading}
@@ -235,12 +249,12 @@ function RegisterPage({ onRegistrationSuccess }) {
           </div>
 
           <button className="btn-register" type="submit" disabled={loading}>
-            {loading ? 'Creating Account...' : 'Create Account'}
+            {loading ? t('register_button_loading') : t('register_button')}
           </button>
         </form>
 
         <div className="register-footer">
-          <p>Already have an account? <span className="login-link" onClick={() => onRegistrationSuccess(null)}>Login here</span></p>
+          <p>{t('register_login_text')} <span className="login-link" onClick={() => onRegistrationSuccess(null)}>{t('register_login_link')}</span></p>
         </div>
       </div>
     </div>

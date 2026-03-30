@@ -63,7 +63,7 @@ class GroupMember(models.Model):
     ]
     
     group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='members')
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='group_memberships')
+    user = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, related_name='group_memberships')
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='student')
     joined_at = models.DateTimeField(auto_now_add=True)
     is_muted = models.BooleanField(default=False)

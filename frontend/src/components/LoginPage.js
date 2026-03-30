@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import './LoginPage.css';
 import { getCsrfToken } from '../utils/csrf';
+import { useLanguage } from '../LanguageContext';
 
 function LoginPage({ onUserLogin, initialUser, onLogout }) {
+  const { t, language, toggleLanguage } = useLanguage();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -99,23 +101,28 @@ function LoginPage({ onUserLogin, initialUser, onLogout }) {
 
   return (
     <div className="login-container">
+      <div className="login-header">
+        <button className="btn-language" onClick={toggleLanguage} title="Toggle language">
+          🌐 {language.toUpperCase()}
+        </button>
+      </div>
       {!user ? (
         <div className="login-card">
           <div className="login-logo">
             <img src="/logo.png" alt="Leav Logo" />
             <h1>Leav</h1>
-            <p>Login to your account</p>
+            <p>{t('login_subtitle')}</p>
           </div>
 
           {error && <div className="login-error">{error}</div>}
 
           <form onSubmit={handleLogin}>
             <div className="form-group">
-              <label htmlFor="username">Username</label>
+              <label htmlFor="username">{t('login_username')}</label>
               <input
                 id="username"
                 type="text"
-                placeholder="Enter your username"
+                placeholder={t('login_username')}
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 disabled={loading}
@@ -123,11 +130,11 @@ function LoginPage({ onUserLogin, initialUser, onLogout }) {
             </div>
 
             <div className="form-group">
-              <label htmlFor="password">Password</label>
+              <label htmlFor="password">{t('login_password')}</label>
               <input
                 id="password"
                 type="password"
-                placeholder="Enter your password"
+                placeholder={t('login_password')}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={loading}
@@ -135,19 +142,12 @@ function LoginPage({ onUserLogin, initialUser, onLogout }) {
             </div>
 
             <button className="btn-login" type="submit" disabled={loading}>
-              {loading ? 'Logging in...' : 'Login'}
+              {loading ? t('login_loading') : t('login_button')}
             </button>
           </form>
 
-          <div className="demo-credentials">
-            <p><strong>Demo Credentials:</strong></p>
-            <p>Teacher: john_doe / teacher123</p>
-            <p>Student: alice_student / student123</p>
-            <p>Admin: admin / admin123</p>
-          </div>
-
           <div className="login-footer">
-            <p>Not a user? <span className="register-link" onClick={handleRegisterClick}>Create account here</span></p>
+            <p>{t('login_register_text')} <span className="register-link" onClick={handleRegisterClick}>{t('login_register_link')}</span></p>
           </div>
         </div>
       ) : (

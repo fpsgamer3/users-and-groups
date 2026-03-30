@@ -103,16 +103,16 @@ const AuditLogs = ({ isOpen, onClose }) => {
             onChange={(e) => setFilter(e.target.value)}
             className="filter-select"
           >
-            <option value="all">All Actions</option>
-            <option value="login">Logins</option>
-            <option value="logout">Logouts</option>
-            <option value="account_create">Account Created</option>
-            <option value="account_delete">Account Deleted</option>
-            <option value="account_update">Account Updated</option>
-            <option value="message_send">Messages Sent</option>
-            <option value="group_create">Groups Created</option>
-            <option value="member_join">Members Joined</option>
-            <option value="role_change">Role Changes</option>
+            <option value="all">{t('filter_all_actions')}</option>
+            <option value="login">{t('filter_action_login')}</option>
+            <option value="logout">{t('filter_action_logout')}</option>
+            <option value="account_create">{t('filter_action_account_create')}</option>
+            <option value="account_delete">{t('filter_action_account_delete')}</option>
+            <option value="account_update">{t('filter_action_account_update')}</option>
+            <option value="message_send">{t('filter_action_message_send')}</option>
+            <option value="group_create">{t('filter_action_group_create')}</option>
+            <option value="member_join">{t('filter_action_member_join')}</option>
+            <option value="role_change">{t('filter_action_role_change')}</option>
           </select>
         </div>
 

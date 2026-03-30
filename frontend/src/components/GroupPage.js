@@ -178,7 +178,7 @@ function GroupPage({ user, onLogout }) {
     
     try {
       const response = await fetch(
-        `http://localhost:8000/api/auth/groups/${selectedGroupId}/export/`,
+        `http://localhost:8000/api/auth/groups/${selectedGroupId}/export/?language=${language}`,
         {
           method: 'GET',
           credentials: 'include',
@@ -243,7 +243,7 @@ function GroupPage({ user, onLogout }) {
       <div className="group-header">
         <div className="header-logo">
           <img src="/logo.png" alt="Leav" className="logo-img" />
-          <h1>{user ? user.first_name + t('groups_title') : 'Groups'}</h1>
+          <h1>{user ? (language === 'bg' ? `Групите на ${user.first_name}` : `${user.first_name}${t('groups_title_custom')}`) : 'Groups'}</h1>
         </div>
         <div className="header-actions">
           <span className="user-info">{user?.username}</span>

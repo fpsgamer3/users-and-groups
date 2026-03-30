@@ -237,10 +237,10 @@ function GroupList({ groups, selectedGroupId, onSelectGroup, onRefresh, currentU
                     <div style={{fontSize:12,color:'#888'}}>{group.members.length} {t('groups_members').toLowerCase()}</div>
                   </div>
                 </div>
-                <div style={{fontSize:13,marginBottom:6}}><b>Description:</b> {group.description || <span style={{color:'#bbb'}}>—</span>}</div>
-                <div style={{fontSize:13,marginBottom:6}}><b>Created by:</b> {group.created_by_username}</div>
-                <div style={{fontSize:13,marginBottom:6}}><b>Created:</b> {group.created_at ? new Date(group.created_at).toLocaleDateString() : <span style={{color:'#bbb'}}>—</span>}</div>
-                <div style={{fontSize:13,marginBottom:6}}><b>Messages:</b> {group.message_count}</div>
+                <div style={{fontSize:13,marginBottom:6}}><b>{t('group_description')}:</b> {group.description || <span style={{color:'#bbb'}}>—</span>}</div>
+                <div style={{fontSize:13,marginBottom:6}}><b>{t('group_created_by')}:</b> {group.created_by_username}</div>
+                <div style={{fontSize:13,marginBottom:6}}><b>{t('group_created')}:</b> {group.created_at ? new Date(group.created_at).toLocaleDateString() : <span style={{color:'#bbb'}}>—</span>}</div>
+                <div style={{fontSize:13,marginBottom:6}}><b>{t('group_message_count')}:</b> {group.message_count}</div>
                 {canDeleteGroup && (
                   <button
                     className="btn-delete-group hover-menu-delete"

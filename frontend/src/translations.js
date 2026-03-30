@@ -2,6 +2,7 @@ const translations = {
   en: {
     // Login Page
     login_title: 'Login',
+    login_subtitle: 'Login to your account',
     login_username: 'Username',
     login_password: 'Password',
     login_button: 'Login',
@@ -37,6 +38,7 @@ const translations = {
     // Group Page
     // Group Page Header - Dynamic with user's name
     groups_title: "'s Groups",
+    groups_title_custom: "'s Groups",
     groups_members: 'Members',
     groups_manage: 'Manage',
     groups_no_members: 'No members',
@@ -107,6 +109,34 @@ const translations = {
     viz_legend: 'Legend',
     viz_no_moderators: 'No moderators',
     viz_no_students: 'No students',
+    viz_no_teachers: 'No teachers',
+    viz_no_groups: 'No groups',
+    viz_username: 'Username',
+    viz_role: 'Role',
+    viz_type: 'Type',
+    viz_group_name: 'Group Name',
+    viz_members: 'Members',
+    viz_summary_total_users: 'Total Users',
+    viz_summary_total_groups: 'Total Groups',
+    viz_summary_teachers: 'Teachers',
+    viz_summary_moderators: 'Moderators',
+    viz_summary_students: 'Students',
+    viz_section_teachers: 'Teachers',
+    viz_section_moderators: 'Moderators',
+    viz_section_students: 'Students',
+    viz_section_groups: 'Groups',
+    
+    // Hover cards - Groups
+    group_description: 'Description',
+    group_created_by: 'Created by',
+    group_created: 'Created',
+    group_message_count: 'Messages',
+    
+    // Hover cards - Members
+    member_email: 'Email',
+    member_grade: 'Grade',
+    member_class_number: 'Class Number',
+    member_joined: 'Joined',
     
     // Export and other
     export_title: 'Export',
@@ -133,6 +163,25 @@ const translations = {
     modal_all_users_added: 'All users are already members',
     modal_no_groups: 'No groups found',
     modal_loading: 'Loading...',
+    
+    // Buttons
+    edit: 'Edit',
+    save: 'Save',
+    cancel: 'Cancel',
+    
+    // Filters
+    filter_all_grades: 'All Grades',
+    filter_all_class_numbers: 'All Class Numbers',
+    filter_all_actions: 'All Actions',
+    filter_action_login: 'Logins',
+    filter_action_logout: 'Logouts',
+    filter_action_account_create: 'Account Created',
+    filter_action_account_delete: 'Account Deleted',
+    filter_action_account_update: 'Account Updated',
+    filter_action_message_send: 'Messages Sent',
+    filter_action_group_create: 'Groups Created',
+    filter_action_member_join: 'Members Joined',
+    filter_action_role_change: 'Role Changes',
     modal_error: 'Error',
     
     // Audit Logs
@@ -162,6 +211,7 @@ const translations = {
   bg: {
     // Login Page
     login_title: 'Вход',
+    login_subtitle: 'Влез в твоя профил',
     login_username: 'Потребителско име',
     login_password: 'Пароля',
     login_button: 'Влез',
@@ -200,7 +250,8 @@ const translations = {
     
     // Group Page
     // Group Page Header - Dynamic with user's name
-    groups_title: "'с групи",
+    groups_title: "'s групи",
+    groups_title_custom: " - Групите",
     groups_members: 'Членове',
     groups_manage: 'Управление',
     groups_no_members: 'Нема членове',
@@ -296,6 +347,23 @@ const translations = {
     modal_loading: 'Зареждане...',
     modal_error: 'Грешка',
     
+    // Buttons
+    edit: 'Редактирай',
+    save: 'Запази',
+    cancel: 'Отмени',
+    filter_all_grades: 'Всички класове',
+    filter_all_class_numbers: 'Всички номера в класа',
+    filter_all_actions: 'Всички действия',
+    filter_action_login: 'Входове',
+    filter_action_logout: 'Изходи',
+    filter_action_account_create: 'Профил създаден',
+    filter_action_account_delete: 'Профил изтрит',
+    filter_action_account_update: 'Профил обновен',
+    filter_action_message_send: 'Съобщения изпратени',
+    filter_action_group_create: 'Групи създадени',
+    filter_action_member_join: 'Членове се присъедини',
+    filter_action_role_change: 'Промени на роля',
+    
     // Audit Logs
     audit_records: 'Записи',
     audit_filter_label: 'Филтър по действие:',
@@ -335,6 +403,34 @@ const translations = {
     viz_legend: 'Легенда',
     viz_no_moderators: 'Няма модератори',
     viz_no_students: 'Няма ученици',
+    viz_no_teachers: 'Няма учители',
+    viz_no_groups: 'Няма групи',
+    viz_username: 'Потребителско име',
+    viz_role: 'Роля',
+    viz_type: 'Тип',
+    viz_group_name: 'Име на група',
+    viz_members: 'Членове',
+    viz_summary_total_users: 'Всички потребители',
+    viz_summary_total_groups: 'Всички групи',
+    viz_summary_teachers: 'Учители',
+    viz_summary_moderators: 'Модератори',
+    viz_summary_students: 'Ученици',
+    viz_section_teachers: 'Учители',
+    viz_section_moderators: 'Модератори',
+    viz_section_students: 'Ученици',
+    viz_section_groups: 'Групи',
+    
+    // Hover cards - Groups
+    group_description: 'Описание',
+    group_created_by: 'Създано от',
+    group_created: 'Създано',
+    group_message_count: 'Съобщения',
+    
+    // Hover cards - Members
+    member_email: 'Имейл',
+    member_grade: 'Клас',
+    member_class_number: 'Номер в класа',
+    member_joined: 'Присъединен',
   }
 };
 

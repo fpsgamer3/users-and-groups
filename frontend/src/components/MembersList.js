@@ -19,8 +19,6 @@ function MembersList({ members, groupId, currentUserRole, currentUserId, isTeach
   const [searchName, setSearchName] = useState('');
   const [filterGrade, setFilterGrade] = useState('');
   const [filterClass, setFilterClass] = useState('');
-  const [editingMember, setEditingMember] = useState(null);
-  const [editData, setEditData] = useState({});
 
   const getRoleColor = (role) => {
     switch(role) {
@@ -31,6 +29,10 @@ function MembersList({ members, groupId, currentUserRole, currentUserId, isTeach
       case 'student': return '#06d6a0';
       default: return '#cccccc';
     }
+  };
+
+  const formatRoleName = (role) => {
+    return role.replace(/_/g, ' ');
   };
 
   const getFirstLetter = (firstName) => {
@@ -84,7 +86,7 @@ function MembersList({ members, groupId, currentUserRole, currentUserId, isTeach
             'X-CSRFToken': getCsrfToken(),
           },
           credentials: 'include',
-          body: JSON.stringify({ user_id: userId, role: 'student' }),
+          body: JSON.stringify({ user_id: userId }),
         }
       );
 
@@ -199,36 +201,6 @@ function MembersList({ members, groupId, currentUserRole, currentUserId, isTeach
     return matchesName && matchesGrade && matchesClass;
   });
 
-  const grades = [...new Set(members.map(m => m.grade).filter(Boolean))].sort((a, b) => a.localeCompare(b));
-
-  const handleUpdateMemberInfo = async (memberId, grade, classNumber) => {
-    try {
-      const response = await fetch(
-        `http://localhost:8000/api/auth/groups/${groupId}/members/${memberId}/`,
-        {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCsrfToken(),
-          },
-          credentials: 'include',
-          body: JSON.stringify({ grade, class_number: classNumber }),
-        }
-      );
-
-      if (response.ok) {
-        if (onMembersChange) onMembersChange();
-        setEditingMember(null);
-      } else {
-        const data = await response.json();
-        setModalError(data.error || 'Failed to update member info');
-      }
-    } catch (err) {
-      setModalError('Error updating member info');
-      console.error('Error:', err);
-    }
-  };
-
   return (
     <div className="members-list">
       <div className="members-header">
@@ -275,12 +247,12 @@ function MembersList({ members, groupId, currentUserRole, currentUserId, isTeach
                 <p className="member-name">
                   {member.first_name} {member.last_name}
                 </p>
-                <p className="member-username">@{member.username} {member.grade && `• Grade ${member.grade}`} {member.class_number && `• #${member.class_number}`}</p>
+                <p className="member-username">@{member.username} {(member.role === 'student' || member.role === 'moderator') && member.grade && `• Grade ${member.grade}`} {(member.role === 'student' || member.role === 'moderator') && member.class_number && `• #${member.class_number}`}</p>
               </div>
               <div className="member-role-badge" 
                 style={{ backgroundColor: getRoleColor(member.role) }}
               >
-                {member.role}
+                {formatRoleName(member.role)}
               </div>
 
               {hoveredMemberId === member.id && ReactDOM.createPortal(
@@ -311,25 +283,29 @@ function MembersList({ members, groupId, currentUserRole, currentUserId, isTeach
                     <div className="card-name-section">
                       <h4>{member.first_name} {member.last_name}</h4>
                       <p className="card-username">@{member.username}</p>
-                      <p className="card-role" style={{ color: getRoleColor(member.role), fontWeight: 600, margin: 0 }}>{member.role}</p>
+                      <p className="card-role" style={{ color: getRoleColor(member.role), fontWeight: 600, margin: 0 }}>{formatRoleName(member.role)}</p>
                     </div>
                   </div>
 
                   <div className="card-details">
                     <div className="detail-row">
-                      <span className="detail-label">Email:</span>
+                      <span className="detail-label">{t('member_email')}:</span>
                       <span className="detail-value">{member.email}</span>
                     </div>
+                    {(member.role === 'student' || member.role === 'moderator') && (
+                      <>
+                        <div className="detail-row">
+                          <span className="detail-label">{t('member_grade')}:</span>
+                          <span className="detail-value">{member.grade || <span style={{color:'#bbb'}}>—</span>}</span>
+                        </div>
+                        <div className="detail-row">
+                          <span className="detail-label">{t('member_class_number')}:</span>
+                          <span className="detail-value">{member.class_number || <span style={{color:'#bbb'}}>—</span>}</span>
+                        </div>
+                      </>
+                    )}
                     <div className="detail-row">
-                      <span className="detail-label">Grade:</span>
-                      <span className="detail-value">{member.grade || <span style={{color:'#bbb'}}>—</span>}</span>
-                    </div>
-                    <div className="detail-row">
-                      <span className="detail-label">Class Number:</span>
-                      <span className="detail-value">{member.class_number || <span style={{color:'#bbb'}}>—</span>}</span>
-                    </div>
-                    <div className="detail-row">
-                      <span className="detail-label">Joined:</span>
+                      <span className="detail-label">{t('member_joined')}:</span>
                       <span className="detail-value">{member.joined_at ? new Date(member.joined_at).toLocaleDateString() : <span style={{color:'#bbb'}}>—</span>}</span>
                     </div>
                   </div>
@@ -358,7 +334,7 @@ function MembersList({ members, groupId, currentUserRole, currentUserId, isTeach
                           )}
                         </>
                       )}
-                      {canKick && member.user !== currentUserId && (currentUserRole === 'admin' || currentUserRole === 'teacher' || member.role !== 'teacher') && (
+                      {canKick && member.user !== currentUserId && member.role !== 'teacher' && (
                         <button
                           className="btn-remove-member"
                           onClick={() => handleRemoveMember(member.user)}
@@ -424,7 +400,7 @@ function MembersList({ members, groupId, currentUserRole, currentUserId, isTeach
                       fontSize: '14px',
                     }}
                   >
-                    <option value="">All Grades</option>
+                    <option value="">{t('filter_all_grades')}</option>
                     <option value="12A">12A</option>
                     <option value="12B">12B</option>
                   </select>
@@ -439,7 +415,7 @@ function MembersList({ members, groupId, currentUserRole, currentUserId, isTeach
                       fontSize: '14px',
                     }}
                   >
-                    <option value="">All Class Numbers</option>
+                    <option value="">{t('filter_all_class_numbers')}</option>
                     {[...new Set(members.map(m => m.class_number).filter(Boolean))].sort((a, b) => a - b).map((num) => (
                       <option key={num} value={num}>{num}</option>
                     ))}
@@ -456,119 +432,15 @@ function MembersList({ members, groupId, currentUserRole, currentUserId, isTeach
                       <div key={member.id} className="user-item" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px' }}>
                         <div className="user-info" style={{ flex: 1, minWidth: 0 }}>
                           <p className="user-name">{member.first_name} {member.last_name}</p>
-                          <p className="user-role">@{member.username} • {member.role}</p>
                           {(member.role === 'student' || member.role === 'moderator') && (
-                            <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: '#888' }}>
+                            <p style={{ margin: '2px 0 4px 0', fontSize: '12px', color: '#888' }}>
                               Grade: {member.grade || 'N/A'} | Class #: {member.class_number || 'N/A'}
                             </p>
                           )}
+                          <p className="user-role">@{member.username} • {member.role}</p>
                         </div>
-                        {(member.role === 'student' || member.role === 'moderator') && (
-                          <button
-                            className="btn-add"
-                            onClick={() => {
-                              setEditingMember(member.id);
-                              setEditData({ grade: member.grade || '', class_number: member.class_number || '' });
-                            }}
-                            style={{ whiteSpace: 'nowrap', flexShrink: 0, marginTop: '2px' }}
-                          >
-                            Edit
-                          </button>
-                        )}
                       </div>
                     ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Edit Modal for Grade and Class Number */}
-              {editingMember && (
-                <div style={{
-                  position: 'fixed',
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  backgroundColor: 'rgba(0,0,0,0.5)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  zIndex: 10000,
-                }} onClick={() => setEditingMember(null)}>
-                  <div style={{
-                    backgroundColor: 'white',
-                    padding: '20px',
-                    borderRadius: '8px',
-                    minWidth: '300px',
-                    boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-                  }} onClick={(e) => e.stopPropagation()}>
-                    <h3>{t('modal_edit_student')}</h3>
-                    <div style={{ marginBottom: '15px' }}>
-                      <label style={{ display: 'block', marginBottom: '5px', fontSize: '14px', fontWeight: 500 }}>Grade:</label>
-                      <input
-                        type="text"
-                        value={editData.grade}
-                        onChange={(e) => setEditData({ ...editData, grade: e.target.value })}
-                        placeholder="e.g., 10, 11, 12"
-                        style={{
-                          width: '100%',
-                          padding: '8px',
-                          border: '1px solid #ddd',
-                          borderRadius: '4px',
-                          boxSizing: 'border-box',
-                        }}
-                      />
-                    </div>
-                    <div style={{ marginBottom: '20px' }}>
-                      <label style={{ display: 'block', marginBottom: '5px', fontSize: '14px', fontWeight: 500 }}>Class Number:</label>
-                      <input
-                        type="number"
-                        value={editData.class_number}
-                        onChange={(e) => setEditData({ ...editData, class_number: e.target.value })}
-                        placeholder="e.g., 1, 2, 3..."
-                        style={{
-                          width: '100%',
-                          padding: '8px',
-                          border: '1px solid #ddd',
-                          borderRadius: '4px',
-                          boxSizing: 'border-box',
-                        }}
-                      />
-                    </div>
-                    <div style={{ display: 'flex', gap: '10px' }}>
-                      <button
-                        onClick={() => {
-                          const member = members.find(m => m.id === editingMember);
-                          handleUpdateMemberInfo(member.user, editData.grade, editData.class_number ? parseInt(editData.class_number) : null);
-                        }}
-                        style={{
-                          flex: 1,
-                          padding: '10px',
-                          backgroundColor: '#3b82f6',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '4px',
-                          cursor: 'pointer',
-                          fontWeight: 500,
-                        }}
-                      >
-                        Save
-                      </button>
-                      <button
-                        onClick={() => setEditingMember(null)}
-                        style={{
-                          flex: 1,
-                          padding: '10px',
-                          backgroundColor: '#e5e7eb',
-                          border: 'none',
-                          borderRadius: '4px',
-                          cursor: 'pointer',
-                          fontWeight: 500,
-                        }}
-                      >
-                        Cancel
-                      </button>
-                    </div>
                   </div>
                 </div>
               )}

@@ -1,4 +1,4 @@
-from django.db.models.signals import post_save, post_delete, m2m_changed
+from django.db.models.signals import post_save, post_delete, m2m_changed, pre_delete
 from django.dispatch import receiver
 from django.contrib.auth.signals import user_logged_in, user_logged_out
 from .models import CustomUser, Group, GroupMember, Message, AuditLog
@@ -14,6 +14,12 @@ def get_client_ip(request=None):
             ip = request.META.get('REMOTE_ADDR')
         return ip
     return None
+
+
+@receiver(pre_delete, sender=CustomUser)
+def delete_user_group_memberships(sender, instance, **kwargs):
+    """Delete all group memberships when a user is deleted"""
+    GroupMember.objects.filter(user=instance).delete()
 
 
 @receiver(user_logged_in)
