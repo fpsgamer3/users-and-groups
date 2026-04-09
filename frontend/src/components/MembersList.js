@@ -32,7 +32,7 @@ function MembersList({ members, groupId, currentUserRole, currentUserId, isTeach
   };
 
   const formatRoleName = (role) => {
-    return role.replace(/_/g, ' ');
+    return t(`role_${role}`) || role.replace(/_/g, ' ');
   };
 
   const getFirstLetter = (firstName) => {
@@ -247,7 +247,7 @@ function MembersList({ members, groupId, currentUserRole, currentUserId, isTeach
                 <p className="member-name">
                   {member.first_name} {member.last_name}
                 </p>
-                <p className="member-username">@{member.username} {(member.role === 'student' || member.role === 'moderator') && member.grade && `• Grade ${member.grade}`} {(member.role === 'student' || member.role === 'moderator') && member.class_number && `• #${member.class_number}`}</p>
+                <p className="member-username">@{member.username} {(member.role === 'student' || member.role === 'moderator') && member.grade && `• ${t('member_grade')} ${member.grade}`} {(member.role === 'student' || member.role === 'moderator') && member.class_number && `• #${member.class_number}`}</p>
               </div>
               <div className="member-role-badge" 
                 style={{ backgroundColor: getRoleColor(member.role) }}
@@ -320,7 +320,7 @@ function MembersList({ members, groupId, currentUserRole, currentUserId, isTeach
                               onClick={() => handleToggleModerator(member.user)}
                               disabled={togglingModerator === member.user}
                             >
-                              {member.role === 'moderator' ? 'Remove Moderator' : 'Make Moderator'}
+                              {member.role === 'moderator' ? t('btn_remove_moderator') : t('btn_make_moderator')}
                             </button>
                           )}
                           {isTeacherGroup && (currentUserRole === 'admin' || currentUserGroupRole === 'teacher_moderator') && member.role !== 'admin' && member.user !== currentUserId && (
@@ -329,17 +329,17 @@ function MembersList({ members, groupId, currentUserRole, currentUserId, isTeach
                               onClick={() => handleToggleModerator(member.user)}
                               disabled={togglingModerator === member.user}
                             >
-                              {member.role === 'teacher_moderator' ? 'Remove Teacher Moderator' : 'Make Teacher Moderator'}
+                              {member.role === 'teacher_moderator' ? t('btn_remove_teacher_moderator') : t('btn_make_teacher_moderator')}
                             </button>
                           )}
                         </>
                       )}
-                      {canKick && member.user !== currentUserId && member.role !== 'teacher' && (
+                      {canKick && member.user !== currentUserId && member.role !== 'teacher' && member.role !== 'teacher_moderator' && (
                         <button
                           className="btn-remove-member"
                           onClick={() => handleRemoveMember(member.user)}
                         >
-                          Remove Member
+                          {t('btn_remove_member')}
                         </button>
                       )}
                       {canMute && member.role === 'student' && member.user !== currentUserId && (
@@ -348,7 +348,7 @@ function MembersList({ members, groupId, currentUserRole, currentUserId, isTeach
                           onClick={() => handleToggleMute(member.user)}
                           disabled={togglingMute === member.user}
                         >
-                          {member.is_muted ? 'Unmute' : 'Mute'}
+                          {member.is_muted ? t('groups_unmute_member') : t('groups_mute_member')}
                         </button>
                       )}
                     </div>
@@ -376,7 +376,7 @@ function MembersList({ members, groupId, currentUserRole, currentUserId, isTeach
               <div style={{ marginBottom: '20px', borderBottom: '1px solid #eee', paddingBottom: '15px' }}>
                 <input
                   type="text"
-                  placeholder="Search by student name..."
+                  placeholder={t('search_by_name')}
                   value={searchName}
                   onChange={(e) => setSearchName(e.target.value)}
                   style={{
@@ -434,10 +434,10 @@ function MembersList({ members, groupId, currentUserRole, currentUserId, isTeach
                           <p className="user-name">{member.first_name} {member.last_name}</p>
                           {(member.role === 'student' || member.role === 'moderator') && (
                             <p style={{ margin: '2px 0 4px 0', fontSize: '12px', color: '#888' }}>
-                              Grade: {member.grade || 'N/A'} | Class #: {member.class_number || 'N/A'}
+                              {t('member_grade')}: {member.grade || 'N/A'} | {t('member_class_number')}: {member.class_number || 'N/A'}
                             </p>
                           )}
-                          <p className="user-role">@{member.username} • {member.role}</p>
+                          <p className="user-role">@{member.username} • {t(`role_${member.role}`)}</p>
                         </div>
                       </div>
                     ))}
@@ -457,13 +457,13 @@ function MembersList({ members, groupId, currentUserRole, currentUserId, isTeach
                         <div key={user.id} className="user-item">
                           <div className="user-info">
                             <p className="user-name">{user.first_name} {user.last_name}</p>
-                            <p className="user-role">@{user.username} • {user.role}</p>
+                            <p className="user-role">@{user.username} • {t(`role_${user.role}`)}</p>
                           </div>
                           <button
                             className="btn-add"
                             onClick={() => handleAddMember(user.id)}
                           >
-                            + Add
+                            {t('btn_add_member')}
                           </button>
                         </div>
                       ))}

@@ -60,6 +60,15 @@ const AuditLogs = ({ isOpen, onClose }) => {
     return new Date(timestamp).toLocaleString();
   };
 
+  const formatDescription = (log) => {
+    const key = `audit_desc_${log.action}`;
+    const template = t(key);
+    if (template === key) return log.description; // fallback to raw if key missing
+    return template
+      .replace('{user}', log.user_username || log.target_user_username || '')
+      .replace('{group}', log.group_name || '');
+  };
+
   const getActionColor = (action) => {
     const colors = {
       'login': '#10b981',
@@ -133,9 +142,9 @@ const AuditLogs = ({ isOpen, onClose }) => {
                       className="log-action" 
                       style={{ backgroundColor: getActionColor(log.action) }}
                     >
-                      {log.action_display}
+                      {t(`audit_action_${log.action}`)}
                     </span>
-                    <div className="log-description">{log.description}</div>
+                    <div className="log-description">{formatDescription(log)}</div>
                     <div className="log-meta">
                       {log.user_username && (
                         <span className="log-user">👤 {log.user_username}</span>

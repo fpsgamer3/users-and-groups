@@ -76,24 +76,6 @@ const translations = {
     members_modal_add_button: '+ Add',
     members_modal_close: '✕',
     
-    // Audit Logs
-    audit_records: '📋 Records',
-    audit_filter_label: 'Filter by action:',
-    audit_action_login: 'Login',
-    audit_action_logout: 'Logout',
-    audit_action_account_create: 'Account Created',
-    audit_action_account_delete: 'Account Deleted',
-    audit_action_account_update: 'Account Updated',
-    audit_action_message_send: 'Message Sent',
-    audit_action_message_delete: 'Message Deleted',
-    audit_action_group_create: 'Group Created',
-    audit_action_group_delete: 'Group Deleted',
-    audit_action_group_update: 'Group Updated',
-    audit_action_member_join: 'Member Joined',
-    audit_action_member_leave: 'Member Left',
-    audit_action_member_remove: 'Member Removed',
-    audit_action_role_change: 'Role Changed',
-    
     // Visualization
     viz_title: 'System Visualization',
     viz_back: '← Back to Groups',
@@ -132,6 +114,22 @@ const translations = {
     group_created: 'Created',
     group_message_count: 'Messages',
     
+    // Buttons - Members
+    btn_make_moderator: 'Make Moderator',
+    btn_remove_moderator: 'Remove Moderator',
+    btn_make_teacher_moderator: 'Make Teacher Moderator',
+    btn_remove_teacher_moderator: 'Remove Teacher Moderator',
+    btn_remove_member: 'Remove Member',
+    btn_add_member: '+ Add',
+    search_by_name: 'Search by student name...',
+
+    // Roles
+    role_admin: 'Admin',
+    role_teacher: 'Teacher',
+    role_teacher_moderator: 'Teacher Moderator',
+    role_moderator: 'Moderator',
+    role_student: 'Student',
+
     // Hover cards - Members
     member_email: 'Email',
     member_grade: 'Grade',
@@ -207,18 +205,34 @@ const translations = {
     audit_action_member_leave: 'Member Left',
     audit_action_member_remove: 'Member Removed',
     audit_action_role_change: 'Role Changed',
+
+    // Audit Descriptions
+    audit_desc_login: '{user} logged in',
+    audit_desc_logout: '{user} logged out',
+    audit_desc_account_create: 'Account created for {user}',
+    audit_desc_account_delete: 'Account deleted: {user}',
+    audit_desc_account_update: 'Account updated for {user}',
+    audit_desc_message_send: '{user} sent a message in {group}',
+    audit_desc_message_delete: 'Message deleted from {group}',
+    audit_desc_group_create: "Group '{group}' created",
+    audit_desc_group_delete: "Group '{group}' deleted",
+    audit_desc_group_update: "Group '{group}' updated",
+    audit_desc_member_join: '{user} joined {group}',
+    audit_desc_member_leave: '{user} left {group}',
+    audit_desc_member_remove: '{user} was removed from {group}',
+    audit_desc_role_change: "Role of {user} changed in {group}",
   },
   bg: {
     // Login Page
     login_title: 'Вход',
     login_subtitle: 'Влез в твоя профил',
     login_username: 'Потребителско име',
-    login_password: 'Пароля',
+    login_password: 'Парола',
     login_button: 'Влез',
     login_loading: 'Влизане...',
     login_error_empty: 'Попълнете всички полета',
-    login_error_invalid: 'Невалидни учетни данни',
-    login_demo: 'Демо учетни данни:',
+    login_error_invalid: 'Невалидни данни',
+    login_demo: 'Демо данни:',
     login_register_link: 'Създай профил тук',
     login_register_text: 'Нямаш профил?',
     
@@ -288,56 +302,25 @@ const translations = {
     members_modal_all_added: 'Всички потребители вече са членове',
     members_modal_add_button: '+ Добави',
     members_modal_close: '✕',
-    
-    // Audit Logs
-    audit_records: '📋 Записи',
-    audit_filter_label: 'Филтър по действие:',
-    audit_action_login: 'Вход',
-    audit_action_logout: 'Излез',
-    audit_action_account_create: 'Профил създаден',
-    audit_action_account_delete: 'Профил изтрит',
-    audit_action_account_update: 'Профил обновен',
-    audit_action_message_send: 'Съобщение изпратено',
-    audit_action_message_delete: 'Съобщение изтрито',
-    audit_action_group_create: 'Група създадена',
-    audit_action_group_delete: 'Група изтрита',
-    audit_action_group_update: 'Група обновена',
-    audit_action_member_join: 'Член се присъедини',
-    audit_action_member_leave: 'Член напусна',
-    audit_action_member_remove: 'Член премахнат',
-    audit_action_role_change: 'Роля променена',
-    
-    // Visualization
-    viz_title: 'Системна визуализация',
-    viz_back: '← Назад към групи',
-    viz_teacher: 'Учител',
-    viz_moderator: 'Модератор',
-    viz_group: 'Група',
-    viz_student: 'Ученик',
-    viz_graph: '🔵 Изглед графика',
-    viz_table: '📋 Изглед таблица',
-    viz_info: '📊 Йерархия (отляво надясно): Учители → Модератори → Ученици → Групи • Влачете възли за преместване (остава фиксирано) • Превъртете за увеличаване • Влачете платно за панорамиране',
-    viz_loading: 'Зареждане на данни от графика...',
-    viz_error: 'Достъп отказан. Само за админ.',
-    
+
     // Export and other
     export_title: 'Експорт',
     no_group_selected: 'Изберете група за преглед на съобщенията',
     app_loading: 'Зареждане...',
     groups: 'Групи',
-    
+
     // MessageList & MessageInput
     message_no_messages: 'Няма съобщения. Започнете разговор!',
     message_placeholder: 'Напишете съобщение...',
     message_send: 'Изпрати',
-    
+
     // Member Info
     member_count_one: '1 член',
     member_count_many: '{count} членове',
-    
+
     // Select header
     select_group_member: 'Изберете член на група за промяна',
-    
+
     // Modal Titles & Popups
     modal_manage_members: 'Управление на членове',
     modal_edit_student: 'Редактиране на информация на ученик',
@@ -346,11 +329,13 @@ const translations = {
     modal_no_groups: 'Няма намерени групи',
     modal_loading: 'Зареждане...',
     modal_error: 'Грешка',
-    
+
     // Buttons
     edit: 'Редактирай',
     save: 'Запази',
     cancel: 'Отмени',
+
+    // Filters
     filter_all_grades: 'Всички класове',
     filter_all_class_numbers: 'Всички номера в класа',
     filter_all_actions: 'Всички действия',
@@ -361,9 +346,9 @@ const translations = {
     filter_action_account_update: 'Профил обновен',
     filter_action_message_send: 'Съобщения изпратени',
     filter_action_group_create: 'Групи създадени',
-    filter_action_member_join: 'Членове се присъедини',
+    filter_action_member_join: 'Членове се присъединили',
     filter_action_role_change: 'Промени на роля',
-    
+
     // Audit Logs
     audit_records: 'Записи',
     audit_filter_label: 'Филтър по действие:',
@@ -371,10 +356,10 @@ const translations = {
     audit_empty: 'Няма намерени записи',
     audit_access_denied: 'Само администраторите могат да преглеждат записите',
     audit_fetch_error: 'Неуспешно зареждане на записи',
-    
-    // Audit Actions
+
+    // Audit action badges
     audit_action_login: 'Вход',
-    audit_action_logout: 'Излез',
+    audit_action_logout: 'Изход',
     audit_action_account_create: 'Профил създаден',
     audit_action_account_delete: 'Профил изтрит',
     audit_action_account_update: 'Профил обновен',
@@ -387,7 +372,23 @@ const translations = {
     audit_action_member_leave: 'Член напусна',
     audit_action_member_remove: 'Член премахнат',
     audit_action_role_change: 'Роля променена',
-    
+
+    // Audit Descriptions
+    audit_desc_login: '{user} влезе в системата',
+    audit_desc_logout: '{user} излезе от системата',
+    audit_desc_account_create: 'Профил създаден за {user}',
+    audit_desc_account_delete: 'Профил изтрит: {user}',
+    audit_desc_account_update: 'Профил обновен за {user}',
+    audit_desc_message_send: '{user} изпрати съобщение в {group}',
+    audit_desc_message_delete: 'Съобщение изтрито от {group}',
+    audit_desc_group_create: "Група '{group}' създадена",
+    audit_desc_group_delete: "Група '{group}' изтрита",
+    audit_desc_group_update: "Група '{group}' обновена",
+    audit_desc_member_join: '{user} се присъедини към {group}',
+    audit_desc_member_leave: '{user} напусна {group}',
+    audit_desc_member_remove: '{user} беше премахнат от {group}',
+    audit_desc_role_change: 'Ролята на {user} беше променена в {group}',
+
     // Visualization
     viz_title: 'Системна визуализация',
     viz_back: '← Назад към групи',
@@ -426,6 +427,22 @@ const translations = {
     group_created: 'Създано',
     group_message_count: 'Съобщения',
     
+    // Buttons - Members
+    btn_make_moderator: 'Направи модератор',
+    btn_remove_moderator: 'Премахни модератор',
+    btn_make_teacher_moderator: 'Направи учител модератор',
+    btn_remove_teacher_moderator: 'Премахни учител модератор',
+    btn_remove_member: 'Премахни член',
+    btn_add_member: '+ Добави',
+    search_by_name: 'Търси по име...',
+
+    // Roles
+    role_admin: 'Администратор',
+    role_teacher: 'Учител',
+    role_teacher_moderator: 'Учител Модератор',
+    role_moderator: 'Модератор',
+    role_student: 'Ученик',
+
     // Hover cards - Members
     member_email: 'Имейл',
     member_grade: 'Клас',
