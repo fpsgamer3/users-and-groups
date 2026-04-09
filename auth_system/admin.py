@@ -93,7 +93,7 @@ class GroupAdmin(admin.ModelAdmin):
     list_display = ['group_name_display', 'creator_display', 'member_count_badge', 'message_count_badge', 'created_at_display']
     list_filter = ['created_at']
     search_fields = ['name', 'description']
-    readonly_fields = ['created_at', 'updated_at', 'group_stats', 'description']
+    readonly_fields = ['created_at', 'updated_at', 'group_stats']
     ordering = ['-created_at']
     
     fieldsets = (
