@@ -429,15 +429,13 @@ function MembersList({ members, groupId, currentUserRole, currentUserId, isTeach
                   <h3 style={{ marginTop: 0, marginBottom: '10px', fontSize: '14px', color: '#666' }}>{t('modal_add_members')} ({filteredMembers.length})</h3>
                   <div className="user-list">
                     {filteredMembers.map((member) => (
-                      <div key={member.id} className="user-item" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px' }}>
-                        <div className="user-info" style={{ flex: 1, minWidth: 0 }}>
-                          <p className="user-name">{member.first_name} {member.last_name}</p>
+                      <div key={member.id} className="user-item">
+                        <div className="user-info">
+                          <span className="user-name">{member.first_name} {member.last_name}</span>
                           {(member.role === 'student' || member.role === 'moderator') && (
-                            <p style={{ margin: '2px 0 4px 0', fontSize: '12px', color: '#888' }}>
-                              {t('member_grade')}: {member.grade || 'N/A'} | {t('member_class_number')}: {member.class_number || 'N/A'}
-                            </p>
+                            <span className="user-grade">{t('member_grade')}: {member.grade || 'N/A'} | {t('member_class_number')}: {member.class_number || 'N/A'}</span>
                           )}
-                          <p className="user-role">@{member.username} • {t(`role_${member.role}`)}</p>
+                          <span className="user-role">@{member.username} • {t(`role_${member.role}`)}</span>
                         </div>
                       </div>
                     ))}
@@ -456,15 +454,17 @@ function MembersList({ members, groupId, currentUserRole, currentUserId, isTeach
                       {addableUsers.map((user) => (
                         <div key={user.id} className="user-item">
                           <div className="user-info">
-                            <p className="user-name">{user.first_name} {user.last_name}</p>
-                            <p className="user-role">@{user.username} • {t(`role_${user.role}`)}</p>
+                            <span className="user-name">{user.first_name} {user.last_name}</span>
+                            <span className="user-role">@{user.username} • {t(`role_${user.role}`)}</span>
                           </div>
-                          <button
-                            className="btn-add"
-                            onClick={() => handleAddMember(user.id)}
-                          >
-                            {t('btn_add_member')}
-                          </button>
+                          <div className="user-btn-col">
+                            <button
+                              className="btn-add"
+                              onClick={() => handleAddMember(user.id)}
+                            >
+                              {t('btn_add_member')}
+                            </button>
+                          </div>
                         </div>
                       ))}
                     </div>
