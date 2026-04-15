@@ -78,7 +78,7 @@ function MessageList({ messages, currentUserId, currentUserRole, currentUserGrou
                       }}
                       disabled={!editContent.trim()}
                     >
-                      Save
+                      {t('msg_save')}
                     </button>
                     <button
                       className="btn-cancel-edit"
@@ -87,7 +87,7 @@ function MessageList({ messages, currentUserId, currentUserRole, currentUserGrou
                         setEditContent('');
                       }}
                     >
-                      Cancel
+                      {t('msg_cancel')}
                     </button>
                   </div>
                 </div>
@@ -115,7 +115,7 @@ function MessageList({ messages, currentUserId, currentUserRole, currentUserGrou
                           setOpenMenuId(null);
                         }}
                       >
-                        Edit
+                        {t('msg_edit')}
                       </button>
                     )}
                     <button 
@@ -125,7 +125,7 @@ function MessageList({ messages, currentUserId, currentUserRole, currentUserGrou
                         setOpenMenuId(null);
                       }}
                     >
-                      🗑️ Delete
+                      {t('msg_delete')}
                     </button>
                   </div>
                 )}

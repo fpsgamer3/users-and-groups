@@ -146,6 +146,10 @@ const translations = {
     message_no_messages: 'No messages yet. Start a conversation!',
     message_placeholder: 'Type a message...',
     message_send: 'Send',
+    msg_edit: 'Edit',
+    msg_delete: '🗑️ Delete',
+    msg_save: 'Save',
+    msg_cancel: 'Cancel',
     
     // Member Info
     member_count_one: '1 member',
@@ -313,6 +317,10 @@ const translations = {
     message_no_messages: 'Няма съобщения. Започнете разговор!',
     message_placeholder: 'Напишете съобщение...',
     message_send: 'Изпрати',
+    msg_edit: 'Редактирай',
+    msg_delete: '🗑️ Изтрий',
+    msg_save: 'Запази',
+    msg_cancel: 'Отказ',
 
     // Member Info
     member_count_one: '1 член',
